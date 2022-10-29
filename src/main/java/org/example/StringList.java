@@ -2,6 +2,7 @@ package org.example;
 
 public interface StringList {
 
+
     // Добавление элемента.
     // Вернуть добавленный элемент
     // в качестве результата выполнения.
