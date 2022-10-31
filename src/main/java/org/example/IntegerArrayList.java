@@ -1,23 +1,21 @@
 package org.example;
 
-import com.sun.jdi.InvalidCodeIndexException;
-
 import java.util.Arrays;
 
-public class StringArrayList implements StringList {
+public class IntegerArrayList implements IntegerList {
 
-    private String[] list;
+    private Integer[] list;
     private int size;
     private final int DEFAULT_SIZE = 10;
 
-    public StringArrayList() {
-        this.list = new String[DEFAULT_SIZE];
+    public IntegerArrayList() {
+        this.list = new Integer[DEFAULT_SIZE];
     }
-    public StringArrayList(int capacity) {
+    public IntegerArrayList(int capacity) {
         if (capacity < 0) {
             throw new IllegalArgumentException("Illegal capacity!");
         }
-        this.list = new String[capacity];
+        this.list = new Integer[capacity];
     }
 
     private void expand() {
@@ -27,7 +25,7 @@ public class StringArrayList implements StringList {
     }
 
     @Override
-    public String add(String item) {
+    public Integer add(Integer item) {
         if (this.checkIfFull()) {
             expand();
         }
@@ -37,7 +35,7 @@ public class StringArrayList implements StringList {
     }
 
     @Override
-    public String add(int index, String item) {
+    public Integer add(int index, Integer item) {
         checkIndex(index);
         nullCheck(item);
         if (this.checkIfFull()) {
@@ -54,7 +52,7 @@ public class StringArrayList implements StringList {
     }
 
     @Override
-    public String set(int index, String item) {
+    public Integer set(int index, Integer item) {
         checkIndex(index);
         nullCheck(item);
         list[index] = item;
@@ -62,7 +60,7 @@ public class StringArrayList implements StringList {
     }
 
     @Override
-    public String remove(String item) {
+    public Integer remove(Integer item) {
         nullCheck(item);
         int index = indexOf(item);
         if (index == -1) {
@@ -72,9 +70,9 @@ public class StringArrayList implements StringList {
     }
 
     @Override
-    public String remove(int index) {
+    public Integer remove(int index) {
         checkIndex(index);
-        String item = list[index];
+        Integer item = list[index];
         if (index != size) {
             System.arraycopy(list, index + 1, list, index, size - index);
         }
@@ -83,12 +81,14 @@ public class StringArrayList implements StringList {
     }
 
     @Override
-    public boolean contains(String item) {
-        return indexOf(item) != -1;
+    public boolean contains(Integer item) {
+        Integer[] listCopy = toArray();
+        sort(listCopy);
+        return binarySearch(listCopy, item);
     }
 
     @Override
-    public int indexOf(String item) {
+    public int indexOf(Integer item) {
         for (int i = 0; i < size; i++) {
             if (list[i].equals(item)) {
                 return i;
@@ -98,7 +98,7 @@ public class StringArrayList implements StringList {
     }
 
     @Override
-    public int lastIndexOf(String item) {
+    public int lastIndexOf(Integer item) {
         for (int i = size - 1; i >= 0; i--) {
             if (list[i].equals(item)) {
                 return i;
@@ -108,13 +108,13 @@ public class StringArrayList implements StringList {
     }
 
     @Override
-    public String get(int index) {
+    public Integer get(int index) {
         checkIndex(index);
         return list[index];
     }
 
     @Override
-    public boolean equals(StringList otherList) {
+    public boolean equals(IntegerList otherList) {
         return Arrays.equals(this.toArray(), otherList.toArray());
     }
 
@@ -131,15 +131,15 @@ public class StringArrayList implements StringList {
     @Override
     public void clear() {
         size = 0;
-        this.list = new String[size];
+        this.list = new Integer[size];
     }
 
     @Override
-    public String[] toArray() {
+    public Integer[] toArray() {
         return Arrays.copyOf(list, size);
     }
 
-    private void nullCheck(String item) {
+    private void nullCheck(Integer item) {
         if (item == null) {
             throw new NullItemException();
         }
@@ -155,7 +155,7 @@ public class StringArrayList implements StringList {
         }
     }
 
-    public String[] getList() {
+    public Integer[] getList() {
         return list;
     }
 
@@ -163,5 +163,31 @@ public class StringArrayList implements StringList {
         return size;
     }
 
-
+    private void sort(Integer[] list) {
+        for (int i = 0; i < list.length; i++) {
+            int a = list[i];
+            int j = i;
+            while (j > 0 && list [j - 1] >= a) {
+                list[j] = list[j - 1];
+                j--;
+            }
+            list[j] = a;
+        }
+    }
+    private boolean binarySearch(Integer[] list, Integer item) {
+        int min = 0;
+        int max = list.length - 1;
+        while (min <= max) {
+            int mid = (min + max) / 2;
+            if (item.equals(list[mid])) {
+                return true;
+            }
+            if (item < list[mid]) {
+                max = mid - 1;
+            } else {
+                min = mid + 1;
+            }
+        }
+        return false;
+    }
 }
