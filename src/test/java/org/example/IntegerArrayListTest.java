@@ -95,10 +95,19 @@ class IntegerArrayListTest {
     }
 
     @Test
-    void toArray() {
+    void CheckToArray() {
         out.add(LEGITIMATE_INT);
         Integer[] expected = Arrays.copyOf(out.getList(), out.getSize());
         assertArrayEquals(expected, out.toArray());
+    }
+
+    @Test
+    void ShouldGrow() {
+        int newSize = out.size() + out.size() / 2;
+        for (int i = 0; i < out.size(); i++) {
+            out.add(LEGITIMATE_INT);
+        }
+        assertEquals(newSize, out.size());
     }
 
 }

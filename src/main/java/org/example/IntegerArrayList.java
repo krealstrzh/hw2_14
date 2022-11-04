@@ -18,17 +18,15 @@ public class IntegerArrayList implements IntegerList {
         this.list = new Integer[capacity];
     }
 
-    private void expand() {
+    private void grow() {
         int capacityOld = size;
-        int capacityNew = capacityOld + 5;
+        int capacityNew = capacityOld + (capacityOld/2);
         list = Arrays.copyOf(list, capacityNew);
     }
 
     @Override
     public Integer add(Integer item) {
-        if (this.checkIfFull()) {
-            expand();
-        }
+        checkIfFullAndGrow();
         nullCheck(item);
         list[size++] = item;
         return item;
@@ -38,9 +36,7 @@ public class IntegerArrayList implements IntegerList {
     public Integer add(int index, Integer item) {
         checkIndex(index);
         nullCheck(item);
-        if (this.checkIfFull()) {
-            expand();
-        }
+        checkIfFullAndGrow();
         if (index == size) {
             list[size++] = item;
         } else {
@@ -145,8 +141,10 @@ public class IntegerArrayList implements IntegerList {
         }
     }
 
-    private boolean checkIfFull() {
-        return size == list.length;
+    private void checkIfFullAndGrow() {
+        if (size == list.length) {
+            grow();
+        }
     }
 
     private void checkIndex(int index) {
@@ -164,16 +162,35 @@ public class IntegerArrayList implements IntegerList {
     }
 
     private void sort(Integer[] list) {
-        for (int i = 0; i < list.length; i++) {
-            int a = list[i];
-            int j = i;
-            while (j > 0 && list [j - 1] >= a) {
-                list[j] = list[j - 1];
-                j--;
-            }
-            list[j] = a;
+        quickSort(list, 0, list.length - 1);
+    }
+
+    public static void quickSort(Integer[] arr, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(arr, begin, end);
+            quickSort(arr, begin, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, end);
         }
     }
+    private static int partition(Integer[] arr, int begin, int end) {
+        int pivot = arr[end];
+        int i = (begin - 1);
+        for (int j = begin; j < end; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                swapElements(arr, i, j);
+            }
+        }
+        swapElements(arr, i + 1, end);
+        return i + 1;
+    }
+
+    private static void swapElements(Integer[] arr, int left, int right) {
+        int temp = arr[left];
+        arr[left] = arr[right];
+        arr[right] = temp;
+    }
+
     private boolean binarySearch(Integer[] list, Integer item) {
         int min = 0;
         int max = list.length - 1;
